@@ -1,6 +1,6 @@
-variable "kubernetes_fleet_update_strategys" {
+variable "kubernetes_fleet_update_strategies" {
   description = <<EOT
-Map of kubernetes_fleet_update_strategys, attributes below
+Map of kubernetes_fleet_update_strategies, attributes below
 Required:
     - kubernetes_fleet_manager_id
     - name
@@ -16,11 +16,19 @@ EOT
     name                        = string
     stage = object({
       after_stage_wait_in_seconds = optional(number)
-      group = object({
+      group = list(object({
         name = string
-      })
+      }))
       name = string
     })
   }))
+  validation {
+    condition = alltrue([
+      for k, v in var.kubernetes_fleet_update_strategies : (
+        length(v.stage.group) >= 1
+      )
+    ])
+    error_message = "Each group list must contain at least 1 items"
+  }
 }
 
