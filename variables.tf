@@ -14,18 +14,18 @@ EOT
   type = map(object({
     kubernetes_fleet_manager_id = string
     name                        = string
-    stage = object({
+    stage = list(object({
       after_stage_wait_in_seconds = optional(number)
       group = list(object({
         name = string
       }))
       name = string
-    })
+    }))
   }))
   validation {
     condition = alltrue([
       for k, v in var.kubernetes_fleet_update_strategies : (
-        length(v.stage.group) >= 1
+        alltrue([for item in v.stage : (length(item.group) >= 1)])
       )
     ])
     error_message = "Each group list must contain at least 1 items"
