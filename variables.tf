@@ -25,6 +25,14 @@ EOT
   validation {
     condition = alltrue([
       for k, v in var.kubernetes_fleet_update_strategies : (
+        length(v.stage) >= 1
+      )
+    ])
+    error_message = "Each stage list must contain at least 1 items"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.kubernetes_fleet_update_strategies : (
         alltrue([for item in v.stage : (length(item.group) >= 1)])
       )
     ])
